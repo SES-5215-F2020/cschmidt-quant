@@ -7,11 +7,58 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Level 1 Title
+# Step 1
 
-## Level 2 Title
-
+Load relevant data (PUMS for persons)
 ```{r}
-2+2
+library(tidycensus)
+library(tidyverse)
+
+person_vars_2018 <- pums_variables %>%
+  distinct(year, survey, var_code, 
+           var_label, data_type, level) %>%
+  filter(level == "person", year == 2018, survey == "acs1")
+
 ```
 
+# Step 2
+
+I am going to use the following data: 
+  1. Marital Status MAR (Categorical)
+  2. Number of hours worked per week WKHP (Continuous - though an argument        can be made for it being categorical since there are only a certain number of hours)
+  3. Wages or Salary Income WAGP (Continuous)
+  4. Gave birth to a child w/in Past 12 Months FER (Categorical)
+  5. Number of Times Married MARHT (Continuous)
+  
+  Downloading those specific data observations for the state of Nevada from ACS 2018:
+  
+```{r load person level data, results = 'hide'}
+person_data <- get_pums(variables = c("MAR", 
+                                      "WKHP", 
+                                      "WAGP", 
+                                      "FER", 
+                                      "MARHT"),
+                        state = "NV", 
+                        year = 2018, 
+                        survey = "acs1",
+                        recode = TRUE) %>%
+  
+  select(MAR_label, WKHP, WAGP, FER, MARHT)
+```
+
+# Step 3
+
+ Cleaning up variable names:
+  
+```{r}
+colnames(person_data)<-c("maritalstatus","weeklyhoursworked","salary","children","totalmarriages")
+
+```
+
+# Step 4
+ 
+  Writing as a *csv: 
+```{r}
+write_csv(person_data,"assignment1.csv")
+```
+  
