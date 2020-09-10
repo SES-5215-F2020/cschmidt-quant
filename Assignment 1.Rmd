@@ -45,6 +45,7 @@ person_data <- get_pums(variables = c("MAR",
   
   select(MAR_label, WKHP, WAGP, FER, MARHT)
 ```
+This results in a dataframe with 28,927 observations on a per person basis for individuals in Nevada in 2018 given 5 different variables. 
 
 # Step 3
 
@@ -52,7 +53,6 @@ person_data <- get_pums(variables = c("MAR",
   
 ```{r}
 colnames(person_data)<-c("maritalstatus","weeklyhoursworked","salary","children","totalmarriages")
-
 ```
 
 # Step 4
@@ -60,5 +60,6 @@ colnames(person_data)<-c("maritalstatus","weeklyhoursworked","salary","children"
   Writing as a *csv: 
 ```{r}
 write_csv(person_data,"assignment1.csv")
+head(person_data, 10)
 ```
   

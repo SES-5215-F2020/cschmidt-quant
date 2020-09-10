@@ -400,6 +400,7 @@ library(tidyverse)</code></pre>
   
   select(MAR_label, WKHP, WAGP, FER, MARHT)</code></pre>
 <pre><code>## Getting data from the 2018 1-year ACS Public Use Microdata Sample</code></pre>
+<p>This results in a dataframe with 28,927 observations on a per person basis for individuals in Nevada in 2018 given 5 different variables.</p>
 </div>
 <div id="step-3" class="section level1">
 <h1>Step 3</h1>
@@ -409,7 +410,21 @@ library(tidyverse)</code></pre>
 <div id="step-4" class="section level1">
 <h1>Step 4</h1>
 <p>Writing as a *csv:</p>
-<pre class="r"><code>write_csv(person_data,&quot;assignment1.csv&quot;)</code></pre>
+<pre class="r"><code>write_csv(person_data,&quot;assignment1.csv&quot;)
+head(person_data, 10)</code></pre>
+<pre><code>## # A tibble: 10 x 5
+##    maritalstatus                 weeklyhourswork… salary children totalmarriages
+##    &lt;chr&gt;                                    &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;         
+##  1 Divorced                                     0      0 b        2             
+##  2 Never married or under 15 ye…                0      0 b        b             
+##  3 Never married or under 15 ye…               40  23000 b        b             
+##  4 Never married or under 15 ye…               35  43800 b        b             
+##  5 Separated                                    0      0 b        1             
+##  6 Never married or under 15 ye…               40  19000 2        b             
+##  7 Widowed                                      0      0 b        1             
+##  8 Never married or under 15 ye…               30   3000 2        b             
+##  9 Widowed                                      0      0 b        1             
+## 10 Widowed                                      0      0 b        1</code></pre>
 </div>
 
 
