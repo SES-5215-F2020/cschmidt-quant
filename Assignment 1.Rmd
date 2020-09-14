@@ -49,10 +49,14 @@ This results in a dataframe with 28,927 observations on a per person basis for i
 
 # Step 3
 
- Cleaning up variable names:
+Cleaning up variable names and variables proper so that they're continuous and not categorical, or at least so that the categorical variables are numeric and not character-based:
   
 ```{r}
 colnames(person_data)<-c("maritalstatus","weeklyhoursworked","salary","children","totalmarriages")
+person_data$children<-replace(person_data$children, person_data$children == "b", 0)
+person_data$totalmarriages<-replace(person_data$totalmarriages, person_data$totalmarriages == "b", 0)
+person_data$children<-as.numeric(person_data$children)
+person_data$totalmarriages<-as.numeric(person_data$totalmarriages)
 ```
 
 # Step 4
