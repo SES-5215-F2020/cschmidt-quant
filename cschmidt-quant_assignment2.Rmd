@@ -1,0 +1,134 @@
+---
+title: "cschmidt-quant_assignment2"
+author: "cschmidt"
+date: "9/15/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Load csv document from assignment 1. Filter out negative values.
+
+```{r}
+library(dplyr)
+df<-read.csv("assignment1.csv")
+df2<-filter(df, weeklyhoursworked >= 0, salary >= 0, children >= 0, totalmarriages >= 0) 
+
+```
+
+
+
+2. Means of Continuous Variables
+
+```{r}
+
+mwkw<-mean(df2$weeklyhoursworked)
+ms<-mean(df2$salary)
+mtm<-mean(df2$totalmarriages)
+mwkw
+ms
+mtm
+
+```
+The mean weekly hours in Nevada worked is 23.77 hours. 
+The mean salary in Nevada is $28,023.11.
+The mean number of total marriages for Nevada residents is 1. 
+
+3. Sample Standard Deviations of Continuous Variables
+
+```{r}
+sdmwkw<-sd(df2$weeklyhoursworked)
+sds<-sd(df2$salary)
+sdtm<-sd(df2$totalmarriages)
+sdmwkw
+sds
+sdtm
+```
+
+The standard deviation of weekly hours in Nevada worked is 20.93 hours. 
+The standard deviation of salary in Nevada is $50,521.49.
+The standard deviation of total marriages for Nevada residents is 0.85.
+
+4. Interquartile Range of Continuous Variable
+
+```{r}
+IQR(df2$weeklyhoursworked)
+IQR(df2$salary)
+IQR(df2$totalmarriages)
+```
+
+The IQR for weekly hours worked is 40 hours.
+The IQR for salary is 40 hours. 
+The IQR for total marriages is 1 marriage. 
+
+5. 95% Confidence Intervals (presuming normal distributions?)
+
+```{r}
+mwkw+(1.96*(sdmwkw/sqrt(23995)))
+mwkw-(1.96*(sdmwkw/sqrt(23995)))
+ms+(1.96*(sds/sqrt(23995)))
+ms-(1.96*(sds/sqrt(23995)))
+mtm+(1.96*(sdtm/sqrt(23995)))
+mtm-(1.96*(sdtm/sqrt(23995)))
+
+
+```
+
+The 95% confidence interval of weekly work hours in Nevada is from 23.51 hours to 24.04 hours. 
+The 95% confidence interval for salary in Nevada is from $27,383.86 to $28,662.36.
+The 95% confidence interval for total marriages is from 0.99 marriages to 1.01 marriages. 
+
+6. Histograms
+
+```{r}
+hist(df2$weeklyhoursworked)
+hist(df2$salary)
+hist(df2$totalmarriages)
+```
+For weekly hours worked, there are clear spikes at the 40 hour work week and the zero hour work week. This makes sense. The general layout of the rest of the histogram shows a slow ramp up to the mean and a slow ramp down after it. 
+
+The vast majority of Nevada residents have no yearly income. This makes sense given the fact that the employment rate does not consider individuals who are no longer or were never in the workforce. It is also skewed sharply to the right given large outliers. 
+
+Total marriages per person are distributed around the mean, with a couple outliers at 3, but none further. There are more people who have been married once than there are who haven't, which is interesting in its own right. 
+
+7. 95% Confidence Intervals for the Proportion of Population in Each Category of Categorical Variables. 
+
+There are two categorical variables — marital status and amount of children had over the past year. 
+
+```{r}
+unique(df2$maritalstatus)
+unique(df2$children)
+```
+
+```{r}
+t.test(df2$maritalstatus == "Divorced")
+t.test(df2$maritalstatus == "Never married or under 15 years old")
+t.test(df2$maritalstatus == "Widowed")
+t.test(df2$maritalstatus == "Married")
+t.test(df2$maritalstatus == "Separated")
+```
+
+The true amount of divorced people in Nevada is 95% likely to be between 13.77% and 14.66% of the population. 
+
+The true amount of never married or under 15 years old people in Nevada is 95% likely to be between 29.09% and 30.25% of the population. 
+
+The true amount of widowed people in Nevada is 95% likely to be between 5.5% and 6.09% of the population. 
+
+The true amount of married people in Nevada is 95% likely to be between 48.04% and 49.31% of the population. 
+
+The true amount of separated people in Nevada is 95% likely to be between 1.48% and 1.80% of the population. 
+```{r}
+
+t.test(df2$children == 0)
+t.test(df2$children == 1)
+t.test(df2$children == 2)
+
+```
+
+It is 95% likely that the amount of people who had 0 children in the past 12 months in Nevada is between 73.31% and 74.42% of the population.
+
+It is 95% likely that the amount of people who had 1 child in the past 12 months in Nevada is between 1.17% and 1.46% of the population. 
+
+It is 95% likely that the amount of people who had 2 children in the past 12 months in Nevada is between 24.27% and 25.36% of the population??
