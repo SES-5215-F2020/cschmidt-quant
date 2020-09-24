@@ -1,0 +1,114 @@
+---
+title: "cschmidt-quant_assignment3"
+author: "cschmidt"
+date: "9/23/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#Intro
+Filter for Use
+```{r}
+library(dplyr)
+library(ggplot2)
+df<-read.csv("assignment1.csv")
+df2<-filter(df, weeklyhoursworked >= 0, salary >= 0, totalmarriages >= 0) 
+head(df2)
+```
+Enumeration of Variable Types: 
+
+maritalstatus: categorical variable with three or more levels (5)
+children: categorical variable with three or more levels (3)
+total marriages: continuous variable (at least by original classification)
+salary: continuous variable
+weeklyhoursworked: continuous variable
+
+Combos: 
+salary/weeklyhoursworked: Pearson's Correlation (Significance & Correlation)
+maritalstatus OR children/salary OR weeklyhoursworked: ANOVA (Correlation) or Tukey HSD (Significance)
+maritalstatus/children: chi-squared (Correlation)
+Two-Sample T-Tests can be conducted by limiting the maritalstatus to 2 and comparing to continuous variables (Significance)
+
+#1. Pearson's Correlation
+```{r}
+correlation1 <- cor.test(df$salary, df$weeklyhoursworked)
+correlation1
+```
+Since the P-Value is less than 0.05, the result is statistically significant, and significantly so, that there is a positive correlation between salary and weekly hours worked. 
+```{r}
+ggplot(df, aes(x = weeklyhoursworked, y = salary)) + 
+    geom_point(size = 0.5, alpha = 0.25, position = "jitter") +
+    geom_smooth() +
+    theme_bw() +
+    scale_x_continuous(name = "Weekly Hours Worked") +
+    scale_y_continuous(name = "Salary") 
+```
+Note the excess of the outliers. 
+
+#2. ANOVA
+Children v. Weekly Hours Worked
+```{r}
+anova0<-aov(weeklyhoursworked ~ children, data = df)
+summary(anova0)
+```
+
+
+Salary v. Marital Status
+```{r}
+anova <- aov (salary ~ maritalstatus, data = df)
+summary(anova)
+```
+
+Difference Check for Salary v. Marital Status
+```{r}
+differences<-TukeyHSD(anova)
+tribble<-as_tibble(cbind(pair = row.names(differences$maritalstatus),
+                differences$maritalstatus))
+tribble
+```
+Strong relationship between salary and marriage vs. divorce, salary and being unmarried vs. divorce, salary and widowing vs. divorce, salary and being unmarried vs. being married, salary and separation vs. marriage, and salary and being widowed vs. marriage. 
+```{r}
+ggplot(df, aes(x = maritalstatus, y = salary)) +
+  geom_boxplot(outlier.shape=NA) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_x_discrete(name = "Marital Status") +
+  scale_y_continuous(name = "Salary",
+                     breaks = seq(0, 105, by = 5),
+                     labels = paste(prettyNum(seq(0, 105, by = 5), 
+                                              big.mark = ",")))+
+  ylim(0,30000)
+
+```
+Interesting how all of the variation is in that 3rd quartile, but most people don't make any money. 
+
+#3 Two-Sample T-Tests
+
+Marriage, Divorce vs. Weekly Hours Worked
+```{r}
+difference1<-t.test(df$weeklyhoursworked ~ df$maritalstatus == "Divorced" , 
+                    data = df )
+difference1
+```
+The link between weekly hours worked and divorce is apparently extremely significant, as the p-value is close to 0. Divorced individuals generally work more hours. 
+
+```{r}
+difference2<-t.test(df$weeklyhoursworked ~ df$maritalstatus == "Married" , 
+                    data = df )
+difference2
+```
+Funkily—ditto for married indidviduals vs non-married ones. 
+
+#4 Chi-Squared
+```{r}
+chi_sq <- chisq.test(df$maritalstatus, df$children)
+chi_sq
+chi_sq$observed
+chi_sq$expected
+```
+Unshockingly, with the absolutely diminutive p-value, it is unshocking that married couples had the most children in the past year. It is, however, surprising that unmarried people actually had more children than they were expected to have had, all things considered equal. 
+
+
+
