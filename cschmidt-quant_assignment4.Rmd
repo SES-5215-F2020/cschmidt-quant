@@ -1,0 +1,35 @@
+---
+title: "cschmidt-quant_assignment4"
+author: "cschmidt"
+date: "9/25/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load & Filter Libraries and Data
+```{r}
+library(tidyverse)
+library(dbplyr)
+df<-read.csv("assignment1.csv")
+
+```
+
+## Conduct Linear Regression
+
+```{r}
+
+model<-lm(salary ~ weeklyhoursworked + maritalstatus + children + totalmarriages, data = df)
+summary(model)
+```
+
+
+This R^2 value indicates that the four variables (weekly hours worked, marital status, children had in the past year, and total marriages) predicts approximately 31.72% of the variation in the dependent variable - salary. (At least in Nevada.)
+For every extra hour worked weekly, there is a $1216.29 increase in salary with very little standard error. 
+For every extra child had in the past year there is a predicted decrease in salary of $3755.92.
+For every extra marriage, an individual's salary is expected to drop $355.40, though the standard error is significant enough that an individual might actually make more money per extra marriage. Not exactly a robust calculation. This is also not statistically significant by any metric.
+If an individual is married they can expect to make $3492.43 then they would if they were something else. 
+If an individual has never been married or is les than 15 years old they can expect to make $6021 less than they would if they were something else. 
+For the separated and widowed values, it's similar. I also don't know what happened to the divorced metric, but it seems to have gone missing. 
