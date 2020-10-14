@@ -1,0 +1,111 @@
+---
+title: "cschmidt-quant_final"
+author: "cschmidt"
+date: "10/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Prepare and Summarize Data
+
+```{r}
+data<-read.csv("assignment1.csv")
+refined<-subset(data, maritalstatus=="Never married or under 15 years old" | maritalstatus=="Married", select=c(maritalstatus, salary, children))
+re<-subset(refined, salary >= 0)
+head(re, 10)
+range<-range(re$salary)
+median<-median(re$salary)
+print(range)
+print(median)
+married<-subset(re, maritalstatus =="Married")
+marriedrange<-range(married$salary)
+marriedmedian<-median(married$salary)
+print(marriedrange)
+print(marriedmedian)
+unmarried<-subset(re, maritalstatus =="Never married or under 15 years old")
+unmarriedrange<-range(unmarried$salary)
+unmarriedmedian<-median(unmarried$salary)
+print(unmarriedrange)
+print(unmarriedmedian)
+```
+## Introducing the Dataset
+
+1. Introduction
+
+The above dataset "re" is an individual-level dataset from the American Community Survey 2018 edition. The individuals described in this dataset are those individuals in Nevada who are either married or have never been married or are under fifteen years of age. Two data points have been surveyed for each of these individuals--their annual salary and the amount of children they have had in the past year. Salaries range from $0 to $461,000 with a median salary of $12000. No individual had more than two children in one year, as to do so would require some combination of twins, at minimum. 
+
+This dataset was created with the purpose of determining whether or not becoming a single parent has significant salary implications. If it does, then there are significant implications regarding the curtailing of opportunity as a result of parenthood. 
+
+Officially, the hypothesis being tested is this: married individuals that have had children in the past year have higher salaries than non-married individuals that have had children in the past year. 
+
+While it would be worth testing the "control" as well--that married individuals without children have higher salaries than non-married individuals without children, the confounding variable in this particular dataset is that the non-married individuals without children also are significantly likely to include children in the care of their parents, who are thus unlikely to be making a salary anyway. 
+
+2. Some Summary Visualizations
+
+```{r}
+library(ggplot2)
+theme_set(theme_classic())
+options(scipen = 999)
+# Plot
+general<-ggplot(married, aes(x = salary)) +
+geom_density(aes(y = stat(count)), fill = "red") +
+  geom_density(data=unmarried, aes(y=stat(count)), fill = "yellow", alpha=.5) +
+  xlim(0, 200000) +
+  labs(title="Married (Red) v. Unmarried (Yellow)", 
+         x="Salary",
+         y="Count")+
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+general
+mwchildren<-subset(married, children >= 1)
+uwchildren<-subset(unmarried, children >= 1)
+withchildren<-ggplot(mwchildren, aes(x = salary)) +
+geom_density(aes(y = stat(count)), fill = "red") +
+  geom_density(data=uwchildren, aes(y=stat(count)), fill = "yellow", alpha=.5) +
+  xlim(0, 200000) +
+  labs(title="Married with Children (Red) v. Unmarried with Children (Yellow)", 
+         x="Salary",
+         y="Count")+
+  theme(axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+withchildren
+```
+
+## Methods
+
+1. Statistical tests to be used: 
+
+To examine the correlation between marital status + children and salary, I'll be using a two sample t-test, which shows the strength of the relationship between two variables through their p-value. Afterwards, I'll conduct a linear regression to show the relationship of each variable (married with children, unmarried with children) to salary. If the p-value is less than 0.05, this indicates a statistically significant relationship. The r-squared value of the regression will tell us how much of the variation in salary can be attributed to the categorical variable, and how much must be attributable to something else. 
+
+T-Test
+```{r}
+withchildren<-subset(re, children >= 1)
+difference1<-t.test(withchildren$salary ~ withchildren$maritalstatus == "Married" , 
+                    data = withchildren )
+difference1
+```
+
+Regression
+```{r}
+regression<-lm(formula = salary ~ maritalstatus, data = withchildren)
+summary(regression)
+```
+
+## Results
+
+1. T-Test
+The T-Test gives a p-value substantially less than 0.05, indicating a statistically significant relationship between salary and marital status for people with children who are either married or have never been married. 
+
+2. Regression
+The linear regression indicates an estimated loss of $12,348 for individuals with children who are not and have never been married, and indicates high confidence for this assessment by virtue of the p-value. 
+
+## Discussion
+
+The results of these tests, would, at face value, confirm the hypothesis posed in the introduction: that having becoming a parent as a single person is both related to and likely to decrease one's salary. That said, the limitation described in the introduction is significant--not being able to ascertain whether or not unmarried persons without children are worse off salary-wise than married persons without children given the nature of mixing in adults and children in the unmarried category severely limits our ability to tell whether or not the drop in salary predicted by the regression is a result of having children or being married. A follow-up analysis would be best started by ameliorating this uncertainty, perhaps by creating a separate category for children within the marital status breakdown. 
+
+## Conclusion
+
+While our conclusions are sadly not as robust as they could have been given extra starting data, there is a firm indication that supporting children on one's own is a decision that comes with significant implications for one's salary. Since salary is so related to an indvidual's freedom to make their life the way they see fit, and since having a stable salary is critical to child-rearing, this is data that is worth considering when considering single parenthood. At least in Nevada, which is the only place where this data is unarbitrarily relevant. 
